@@ -19,7 +19,7 @@ export const notFoundHandler = (err, req, res, next) => {
 };
 
 export const genericErrorHandler = (err, req, res, next) => {
-  console.log("ERROR: ", err.message);
+  console.log("ERROR: ", err.message, err);
   res.status(500).send({
     message: "A problem occured caused by the server!",
   });

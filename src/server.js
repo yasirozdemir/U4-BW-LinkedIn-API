@@ -1,18 +1,20 @@
 import Express from "express";
 import listEndpoints from "express-list-endpoints";
+
+import mongoose from "mongoose";
+import cors from "cors";
 import {
   badRequestHandler,
   genericErrorHandler,
   notFoundHandler,
 } from "./ErrorHandlers.js";
-import mongoose from "mongoose";
-import cors from "cors";
 import UsersRouter from "./api/users/index.js";
 import PostsRouter from "./api/posts/index.js";
 import UsersFileRouter from "./api/File/UsersFileRouter.js";
 import PostsFileRouter from "./api/File/PostFileRouter.js";
 import ExperiencesRouter from "./api/experiences/index.js";
 import ExperienceFileRouter from "./api/File/ExperienceFileRouter.js";
+import pdfFileRouter from "./api/File/pdfFileRouter.js";
 
 const server = Express();
 const port = process.env.PORT;
@@ -40,6 +42,7 @@ server.use("/api", PostsRouter);
 server.use("/api", UsersFileRouter);
 server.use("/api", ExperienceFileRouter);
 server.use("/api", PostsFileRouter);
+server.use("/api", pdfFileRouter);
 
 server.use(badRequestHandler);
 
