@@ -76,14 +76,26 @@ ExperiencesRouter.put(
   isUserExisted,
   async (req, res, next) => {
     try {
-      res.send();
+      const updatedExperience = await ExperienceModel.findByIdAndUpdate(
+        req.params.expId,
+        req.body,
+        { new: true, runValidators: true }
+      );
+      if (updatedExperience) res.send(updatedExperience);
+      else
+        next(
+          createHttpError(
+            404,
+            `Experience with id ${req.params.expId} not found!`
+          )
+        );
     } catch (error) {
       next(error);
     }
   }
 );
 
-// delete experince from the dedicated collection, and remove its object Id from related user's experiences array
+// delete experince from the dedicated collection ✅, and remove its object Id from related user's experiences array ✅
 ExperiencesRouter.delete(
   "/users/:userId/experiences/:expId",
   isUserExisted,
