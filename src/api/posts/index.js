@@ -9,17 +9,17 @@ const PostsRouter=Express.Router()
 PostsRouter.post("/posts", async (req,res,next)=>{
     try{  
         const newPost=new PostModel(req.body)
-       await newPost.save()
+       const {_id}=await newPost.save()
         if(newPost){
             const updatedUser=await UsersModel.findByIdAndUpdate(
                 newPost.user,
-                {$push:{posts:newPost}},
+                {$push:{posts:_id}},
                 {new:true,runValidators:true}
             )
             if(updatedUser){
-                console.log(newPost)
+        
                 res.send(updatedUser)
-                console.log(updatedUser.posts)
+               
             }
         }
 
@@ -93,7 +93,12 @@ PostsRouter.delete("/posts/:postId", async (req,res,next)=>{
     try{
         const deleted= await PostModel.findByIdAndDelete(req.params.postId)
         if(deleted){
-            res.status(204).send()
+            const user = await UsersModel.findByIdAndUpdate(
+                req.params.userId,
+                { $pull: { experiences: req.params.expId } },
+                { new: true, runValidators: true }
+              );
+              res.status(204).send();
         }
     }catch(err){
         next(err)

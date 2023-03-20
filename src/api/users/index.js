@@ -31,7 +31,7 @@ UsersRouter.get("/users", async (req,res,next)=>{
         .limit(mongoQuery.options.limit)
       .skip(mongoQuery.options.skip)
       .sort(mongoQuery.options.sort)
-      .populate({path:"posts",select:"text"})
+      .populate({path:"posts",select:"text image "})
       
       const total = await UsersModel.countDocuments(mongoQuery.criteria)
       res.send({
@@ -40,7 +40,6 @@ UsersRouter.get("/users", async (req,res,next)=>{
         numberOfPages: Math.ceil(total / mongoQuery.options.limit),
         allUsers,
       })
-      console.log(allUsers.map(m=>m.posts))
     }catch(err){
         next(err)
     }
