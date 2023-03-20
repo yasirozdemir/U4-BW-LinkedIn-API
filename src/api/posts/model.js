@@ -3,7 +3,7 @@ import mongoose, { model, Types } from "mongoose"
 const {Schema}=mongoose
 
 const PostsSchema= new Schema({
-    text:{type:String,required:true,minLength: 5, maxLength:13 },
+    text:{type:String,required:true,minLength: 5, maxLength:120 },
     image:{type:String, default:""},
     user:{type:mongoose.Types.ObjectId,required:true, ref:"User"},
     comments:[{type:mongoose.Types.ObjectId,required:true, ref:"Comment"}],
