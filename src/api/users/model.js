@@ -22,6 +22,8 @@ const UsersSchema=new Schema({
     title:{type:String,required:true,minLength: 3, maxLength: 12},
     area:{type:String,required:true,minLength: 3, maxLength: 12},
     image:{type:String, default:""},
+    posts:[{  posts:{type:mongoose.Types.ObjectId,required:true, ref:"Post"}}],
+    experiences:[{  experiences:{type:mongoose.Types.ObjectId,required:true, ref:"Expereince"}}]
 
 },{timestamps:true})
 
