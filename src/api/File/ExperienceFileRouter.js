@@ -5,7 +5,6 @@ import { isUserExisted } from "../experiences/index.js";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import { resolveSoa } from "dns";
 
 const ExperienceFilesRouter = Express.Router();
 
@@ -59,10 +58,6 @@ ExperienceFilesRouter.get(
   isUserExisted,
   async (req, res, next) => {
     try {
-      const user = await UsersModel.getUserWithExperiencesDetails(
-        req.params.userId
-      );
-      res.send(user.experiences);
     } catch (error) {
       next(error);
     }
