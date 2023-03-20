@@ -5,7 +5,7 @@ import UsersModel from "../users/model.js";
 
 const ExperiencesRouter = Express.Router();
 
-const isUserExisted = async (req, res, next) => {
+export const isUserExisted = async (req, res, next) => {
   const user = await UsersModel.findById(req.params.userId);
   if (user) next();
   else

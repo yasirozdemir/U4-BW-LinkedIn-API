@@ -12,6 +12,7 @@ import PostsRouter from "./api/posts/index.js";
 import UsersFileRouter from "./api/File/UsersFileRouter.js";
 import PostsFileRouter from "./api/File/PostFileRouter.js";
 import ExperiencesRouter from "./api/experiences/index.js";
+import ExperienceFileRouter from "./api/File/ExperienceFileRouter.js";
 
 const server = Express();
 const port = process.env.PORT;
@@ -37,6 +38,7 @@ server.use("/api", UsersRouter);
 server.use("/api", ExperiencesRouter);
 server.use("/api", PostsRouter);
 server.use("/api", UsersFileRouter);
+server.use("/api", ExperienceFileRouter);
 server.use("/api", PostsFileRouter);
 
 server.use(badRequestHandler);
