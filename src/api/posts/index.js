@@ -1,6 +1,7 @@
 import  Express  from "express";
 import createHttpError from "http-errors"
 import PostModel from "./model.js"
+import UsersModel from "../users/model.js"
 import q2m from "query-to-mongo"
 const PostsRouter=Express.Router()
 
@@ -8,10 +9,20 @@ const PostsRouter=Express.Router()
 PostsRouter.post("/posts", async (req,res,next)=>{
     try{  
         const newPost=new PostModel(req.body)
-       
-        const {_id}=await newPost.save()
-        res.status(201).send({_id:_id})
-     
+       await newPost.save()
+        if(newPost){
+            const updatedUser=await UsersModel.findByIdAndUpdate(
+                newPost.user,
+                {$push:{posts:newPost}},
+                {new:true,runValidators:true}
+            )
+            if(updatedUser){
+                console.log(newPost)
+                res.send(updatedUser)
+                console.log(updatedUser.posts)
+            }
+        }
+
     }catch(err){
         next(err)
     }
@@ -24,7 +35,7 @@ PostsRouter.get("/posts", async (req,res,next)=>{
         .limit(mongoQuery.options.limit)
       .skip(mongoQuery.options.skip)
       .sort(mongoQuery.options.sort)
-      .populate({path:"user",select:"email name surname"})
+      .populate({path:"user",select:"email name surname image"})
       const total = await PostModel.countDocuments(mongoQuery.criteria)
 
       res.send({

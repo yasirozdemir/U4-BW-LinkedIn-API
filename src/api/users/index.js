@@ -1,6 +1,7 @@
 import  Express  from "express";
 import createHttpError from "http-errors"
 import UsersModel from "./model.js";
+import q2m from "query-to-mongo"
 
 const UsersRouter=Express.Router()
 
@@ -23,8 +24,23 @@ UsersRouter.post("/users", async (req,res,next)=>{
 
 UsersRouter.get("/users", async (req,res,next)=>{
     try{
-        const Users=await UsersModel.find()
-        res.send(Users)
+        // const Users=await UsersModel.find()
+        // res.send(Users)
+        const mongoQuery = q2m(req.query)
+        const allUsers=  await UsersModel.find(mongoQuery.criteria, mongoQuery.options.fields)
+        .limit(mongoQuery.options.limit)
+      .skip(mongoQuery.options.skip)
+      .sort(mongoQuery.options.sort)
+      .populate({path:"posts",select:"text"})
+      
+      const total = await UsersModel.countDocuments(mongoQuery.criteria)
+      res.send({
+        links: mongoQuery.links("http://localhost:3001/api/users/", total),
+        total,
+        numberOfPages: Math.ceil(total / mongoQuery.options.limit),
+        allUsers,
+      })
+      console.log(allUsers.map(m=>m.posts))
     }catch(err){
         next(err)
     }
