@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
-const experinenceSchema = new Schema(
+const experienceSchema = new Schema(
   {
     userId: { type: mongoose.Types.ObjectId },
     role: { type: String, required: true },
@@ -15,4 +15,4 @@ const experinenceSchema = new Schema(
   { timestamps: true }
 );
 
-export default model("Experince", experinenceSchema);
+export default model("Experience", experienceSchema);
