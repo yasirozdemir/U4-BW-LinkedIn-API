@@ -1,10 +1,6 @@
 import Express from "express";
 import listEndpoints from "express-list-endpoints";
-import {
-  badRequestHandler,
-  genericErrorHandler,
-  notFoundHandler,
-} from "./ErrorHandlers.js";
+
 import mongoose from "mongoose";
 import cors from "cors";
 import {
@@ -12,8 +8,6 @@ import {
   genericErrorHandler,
   notFoundHandler,
 } from "./ErrorHandlers.js";
-import mongoose from "mongoose";
-import cors from "cors";
 import UsersRouter from "./api/users/index.js";
 import PostsRouter from "./api/posts/index.js";
 import UsersFileRouter from "./api/File/UsersFileRouter.js";

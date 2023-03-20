@@ -1,8 +1,13 @@
 import PdfPrinter from "pdfmake";
 import imageToBase64 from "image-to-base64";
+import ExperienceModel from "../experiences/model.js";
 
 export const getPDFReadableStream = async (user) => {
   console.log(user);
+  const experienceArray = [];
+  //   const experince = await ExperienceModel.findById(user.experiences.toString());
+
+  console.log("new", experienceArray);
   const fonts = {
     Helvetica: {
       normal: "Helvetica",
@@ -20,47 +25,10 @@ export const getPDFReadableStream = async (user) => {
   const printer = new PdfPrinter(fonts);
   const imageEncoded = await imageToBase64(user.image);
 
-  //   const docDefinition = {
-  //     content: [
-  //       {
-  //         style: "tableExample",
-  //         table: {
-  //           body: [
-  //             [
-  //               "Title",
-  //               "Category",
-  //               "Reading time",
-  //               "Author",
-  //               "Image link",
-  //               "Last Updated",
-  //             ],
-  //             [
-  //               article.title,
-  //               article.category,
-  //               `${article.readTime.value} -
-  //               ${article.readTime.unit}`,
-  //               article.author.name,
-  //               article.cover,
-  //               article.createdAt,
-  //             ],
-  //           ],
-  //         },
-  //       },
-
-  //       {
-  //         image: `data:image/jpeg;base64,${imageEncoded}`,
-  //         width: 200,
-  //       },
-  //     ],
-
-  //     defaultStyle: {
-  //       font: "Helvetica",
-  //     },
-  //   };
   const docDefinition = {
     content: [
       {
-        text: user.title + " " + user.name + " " + user.surname + " CV",
+        text: "Curriculum Vitae",
         style: "header",
       },
       {
@@ -80,29 +48,43 @@ export const getPDFReadableStream = async (user) => {
           ],
         ],
       },
-      { text: user.bio, style: "quote", margin: [0, 20, 0, 20] },
-      { text: "User Experiences", style: "header" },
-      //   {
-      //     table: {
-      //       headerRows: 1,
-      //       widths: ["*", "*", "*", "*", "*"],
-      //       body: [
-      //         [
-      //           { text: "Role", style: "tableHeader" },
-      //           { text: "Company", style: "tableHeader" },
-      //           { text: "Start Date", style: "table" },
-      //         ],
-      //         [
-      //           user.experiences.role,
-      //           user.experiences.company,
-      //           user.experiences.startDate,
-      //           user.experiences.endDate,
-      //           user.experiences.description,
-      //         ],
-      //       ],
-      //     },
-      //   },
+      {
+        text: user.bio,
+        style: "quote",
+        margin: [0, 20, 0, 20],
+      },
+      {
+        text: "User Experiences",
+        style: "header",
+      },
+      {
+        table: {
+          headerRows: 1,
+          widths: ["*", "*", "*", "*", "*"],
+          body: user.experiences.map((experience) => {
+            return [
+              [
+                { text: "Role", style: "tableHeader" },
+                { text: "Company", style: "tableHeader" },
+                { text: "Start Date", style: "table" },
+                { text: "End Date", style: "table" },
+                { text: "Description", style: "table", margin: [0, 0, 0, 25] },
+              ],
+
+              [
+                experience.role,
+                experience.company,
+                experience.startDate.toDateString(),
+                experience.endDate.toDateString(),
+                experience.description,
+              ],
+            ];
+          }),
+        },
+        layout: "noBorders",
+      },
     ],
+
     styles: {
       header: {
         fontSize: 22,

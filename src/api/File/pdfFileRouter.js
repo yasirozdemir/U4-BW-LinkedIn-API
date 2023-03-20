@@ -13,12 +13,16 @@ pdfFileRouter.get("/pdf/:userId", async (req, res, next) => {
       `attachment; filename=${req.params.userId}.pdf`
     );
     const selectedUser = await UsersModel.findById(req.params.userId);
-    if (!selectedUser) {
+    const user = await UsersModel.findById(req.params.userId).populate({
+      path: "experiences",
+    });
+    console.log("in pdf router", user.experiences);
+    if (!user) {
       return next(
         createHttpError(404, `User with id ${req.params.articleId} not found!`)
       );
     }
-    const source = await getPDFReadableStream(selectedUser);
+    const source = await getPDFReadableStream(user);
     const destination = res;
 
     pipeline(source, destination, (err) => {
