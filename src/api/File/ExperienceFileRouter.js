@@ -5,9 +5,9 @@ import { isUserExisted } from "../experiences/index.js";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import { pipeline } from "stream";
-import { Transform } from "@json2csv/node";
-import fs from "fs-extra"
+import createHttpError from "http-errors";
+import { createObjectCsvWriter } from "csv-writer";
+
 const ExperienceFilesRouter = Express.Router();
 
 const cloudinaryUploader = multer({
@@ -18,8 +18,7 @@ const cloudinaryUploader = multer({
     },
   }),
 }).single("image");
-const {  createReadStream } = fs
-const getJSONReadableStream = () => createReadStream()
+
 // upload image to cloudinary ✅, update the related experiences image path using the url from cloudinary ✅
 ExperienceFilesRouter.post(
   "/users/:userId/experiences/:expId/image",
@@ -61,16 +60,39 @@ ExperienceFilesRouter.get(
   isUserExisted,
   async (req, res, next) => {
     try {
-    const User=await UsersModel.findById(req.params.userId)
-     res.setHeader("Content-Disposition", "attachment; filename=Experiences.csv")
-     const source = getJSONReadableStream(User.experiences)
-     const transform = new Transform({ fields: [
-      "role", "company", "startDate","endDate","area","description"
-    ] })
-     const destination = res
-     pipeline(source, transform, destination, err => {
-       if (err) console.log(err)
-     })
+      const user = await UsersModel.getUserWithExperiencesDetails(
+        req.params.userId
+      );
+      if (user) {
+        const experiences = user.experiences;
+        const filename = `${(
+          user.name +
+          "-" +
+          user.surname
+        ).toLowerCase()}-experiences.csv`;
+        const csvOptions = {
+          path: filename,
+          header: [
+            { id: "area", title: "Area" },
+            { id: "role", title: "Role" },
+            { id: "company", title: "Company" },
+            { id: "description", title: "Description" },
+          ],
+        };
+        const csvWriter = createObjectCsvWriter(csvOptions);
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename=${filename}`
+        );
+        await csvWriter.writeRecords(experiences);
+        res.sendFile(filename, { root: process.cwd() }, (err) => {
+          console.log(err);
+        });
+      } else {
+        next(
+          createHttpError(404, `User with id ${req.params.userId} not found!`)
+        );
+      }
     } catch (error) {
       next(error);
     }
