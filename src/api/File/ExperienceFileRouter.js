@@ -32,7 +32,6 @@ ExperienceFilesRouter.post(
         },
         { new: true, runValidators: true }
       );
-      console.log(experience);
       if (experience) {
         res.status(201).send({
           message: `Image successfully added to experience with id ${req.params.expId}`,
