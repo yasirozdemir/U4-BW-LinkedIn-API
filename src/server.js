@@ -3,6 +3,11 @@ import listEndpoints from "express-list-endpoints";
 import { badRequestHandler, genericErrorHandler, notFoundHandler } from "./ErrorHandlers.js";
 import mongoose from "mongoose"
 import cors from 'cors';
+import UsersRouter from "./api/users/index.js";
+import PostsRouter from "./api/posts/index.js";
+import UsersFileRouter from "./api/File/UsersFileRouter.js";
+import PostsFileRouter from "./api/File/PostFileRouter.js";
+
 
 const server=Express()
 const port=process.env.PORT  
@@ -29,9 +34,10 @@ const corsOpt={
     cors(corsOpt)
   )
 
-
-
-
+server.use("/api", UsersRouter)
+server.use("/api",PostsRouter)
+server.use("/api",UsersFileRouter)
+server.use("/api",PostsFileRouter)
 
  server.use(badRequestHandler)
 

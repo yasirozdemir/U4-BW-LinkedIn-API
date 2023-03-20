@@ -1,6 +1,6 @@
 import  Express  from "express";
 import createHttpError from "http-errors"
-import UsersModel from "../../validation/UsersModel.js";
+import UsersModel from "./model.js";
 
 const UsersRouter=Express.Router()
 
