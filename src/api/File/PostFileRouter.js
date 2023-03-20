@@ -14,7 +14,7 @@ const cloudinaryUploader = multer({
         folder: "fs0522/posts",
       },
     }),
-  }).single("post")
+  }).single("image")
 
   PostsFileRouter.post("/posts/:postId/image", cloudinaryUploader,async(req,res,next)=>{
 
