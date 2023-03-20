@@ -1,59 +1,58 @@
 import Express from "express";
 import listEndpoints from "express-list-endpoints";
-import { badRequestHandler, genericErrorHandler, notFoundHandler } from "./ErrorHandlers.js";
-import mongoose from "mongoose"
-import cors from 'cors';
+import {
+  badRequestHandler,
+  genericErrorHandler,
+  notFoundHandler,
+} from "./ErrorHandlers.js";
+import mongoose from "mongoose";
+import cors from "cors";
 import UsersRouter from "./api/users/index.js";
 import PostsRouter from "./api/posts/index.js";
 import UsersFileRouter from "./api/File/UsersFileRouter.js";
 import PostsFileRouter from "./api/File/PostFileRouter.js";
+import ExperiencesRouter from "./api/experiences/index.js";
+import ExperienceFileRouter from "./api/File/ExperienceFileRouter.js";
 
+const server = Express();
+const port = process.env.PORT;
+server.use(Express.json());
 
-const server=Express()
-const port=process.env.PORT  
-server.use(Express.json())
+const whiteList = [process.env.FE_DEV_URL, process.env.FE_PROD_URL];
 
+const corsOpt = {
+  origin: (currentOrigin, corsNext) => {
+    if (!currentOrigin || whiteList.indexOf(currentOrigin) !== -1) {
+      corsNext(null, true);
+    } else {
+      corsNext(
+        createHttpError(400, `Origin ${currentOrigin} is not in the whitelist!`)
+      );
+    }
+  },
+};
 
+server.use(cors(corsOpt));
 
+server.use("/api", UsersRouter);
+server.use("/api", ExperiencesRouter);
+server.use("/api", PostsRouter);
+server.use("/api", UsersFileRouter);
+server.use("/api", ExperienceFileRouter);
+server.use("/api", PostsFileRouter);
 
-const whiteList=[process.env.FE_DEV_URL, process.env.FE_PROD_URL]
+server.use(badRequestHandler);
 
-const corsOpt={
-    origin: (currentOrigin, corsNext) => {
-      if (!currentOrigin || whiteList.indexOf(currentOrigin) !== -1) {
-       
-        corsNext(null, true)
-      } else {
-   
-        corsNext(createHttpError(400, `Origin ${currentOrigin} is not in the whitelist!`))
-      }
-    },
-  }
+server.use(notFoundHandler);
+server.use(genericErrorHandler);
 
-  server.use(
-    cors(corsOpt)
-  )
+mongoose.connect(process.env.MONGO_URL);
+mongoose.connection.on("connected", () => {
+  console.log("succesfully connected to mongo");
+});
 
-server.use("/api", UsersRouter)
-server.use("/api",PostsRouter)
-server.use("/api",UsersFileRouter)
-server.use("/api",PostsFileRouter)
-
- server.use(badRequestHandler)
-
-server.use(notFoundHandler)
-server.use(genericErrorHandler)
-
-
-
-
-mongoose.connect(process.env.MONGO_URL)
-mongoose.connection.on("connected",()=>{
-    console.log("succesfully connected to mongo")
-})
-
-server.listen(port,()=>{
-    // console.table(listEndpoints(server))
-    console.log(process.env.FE_DEV_URL)
-    console.log(`Server is listening on port ${port}`)
-})
+server.listen(port, () => {
+  console.table(listEndpoints(server));
+  console.log(process.env.FE_DEV_URL);
+  console.log(`Server is listening on port ${port}`);
+});
