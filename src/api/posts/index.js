@@ -1,6 +1,6 @@
 import  Express  from "express";
 import createHttpError from "http-errors"
-import PostModel from "../../validation/PostModel.js";
+import PostModel from "./model.js"
 import q2m from "query-to-mongo"
 const PostsRouter=Express.Router()
 
