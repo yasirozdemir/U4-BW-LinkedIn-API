@@ -30,6 +30,7 @@ const UsersSchema = new Schema(
     experiences: [
       { type: mongoose.Types.ObjectId, required: true, ref: "Experience" },
     ],
+    likedPosts: [{ type: mongoose.Types.ObjectId, ref: "Post"}]
   },
   { timestamps: true }
 );
