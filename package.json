@@ -1,0 +1,35 @@
+{
+  "name": "u4-bw-linkedin-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yasirozdemir/U4-BW-LinkedIn-API.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yasirozdemir/U4-BW-LinkedIn-API/issues"
+  },
+  "homepage": "https://github.com/yasirozdemir/U4-BW-LinkedIn-API#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-list-endpoints": "^6.0.0",
+    "express-validator": "^6.15.0",
+    "http-errors": "^2.0.0",
+    "mongoose": "^7.0.2",
+    "multer": "^1.4.5-lts.1",
+    "pdfmake": "^0.2.7",
+    "query-to-mongo": "^0.10.2",
+    "stream": "^0.0.2"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.3",
+    "nodemon": "^2.0.21"
+  }
+}
