@@ -35,7 +35,7 @@ PostsRouter.get("/posts", async (req,res,next)=>{
         .limit(mongoQuery.options.limit)
       .skip(mongoQuery.options.skip)
       .sort(mongoQuery.options.sort)
-      .populate({path:"user",select:"email name surname image"})
+      .populate({path:"comments",select:"comment user"})
       const total = await PostModel.countDocuments(mongoQuery.criteria)
 
       res.send({
