@@ -12,7 +12,7 @@ export const isUserExisted = async (req, res, next) => {
     next(createHttpError(404, `User with id ${req.params.userId} not found!`));
 };
 
-// create experince, post in into dedicated collection ✅, push it's object id into related user! ✅
+// create experience, post in into dedicated collection ✅, push it's object id into related user! ✅
 ExperiencesRouter.post(
   "/users/:userId/experiences",
   isUserExisted,
@@ -43,8 +43,10 @@ ExperiencesRouter.get(
   isUserExisted,
   async (req, res, next) => {
     try {
-      const experiences = await ExperienceModel.find();
-      res.send(experiences);
+      const user = await UsersModel.getUserWithExperiencesDetails(
+        req.params.userId
+      );
+      res.send(user.experiences);
     } catch (error) {
       next(error);
     }
@@ -56,8 +58,8 @@ ExperiencesRouter.get(
   isUserExisted,
   async (req, res, next) => {
     try {
-      const experince = await ExperienceModel.findById(req.params.expId);
-      if (experince) res.send(experince);
+      const experience = await ExperienceModel.findById(req.params.expId);
+      if (experience) res.send(experience);
       else
         next(
           createHttpError(
@@ -95,7 +97,7 @@ ExperiencesRouter.put(
   }
 );
 
-// delete experince from the dedicated collection ✅, and remove its object Id from related user's experiences array ✅
+// delete experience from the dedicated collection ✅, and remove its object Id from related user's experiences array ✅
 ExperiencesRouter.delete(
   "/users/:userId/experiences/:expId",
   isUserExisted,

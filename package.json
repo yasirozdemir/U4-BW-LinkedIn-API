@@ -31,7 +31,8 @@
     "multer-storage-cloudinary": "^4.0.0",
     "pdfmake": "^0.2.7",
     "query-to-mongo": "^0.10.2",
-    "stream": "^0.0.2"
+    "stream": "^0.0.2",
+    "image-to-base64": "^2.2.0"
   },
   "devDependencies": {
     "dotenv": "^16.0.3",

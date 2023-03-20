@@ -1,9 +1,11 @@
 import Express from "express";
 import ExperienceModel from "../experiences/model.js";
+import UsersModel from "../users/model.js";
 import { isUserExisted } from "../experiences/index.js";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
+import { resolveSoa } from "dns";
 
 const ExperienceFilesRouter = Express.Router();
 
@@ -46,6 +48,21 @@ ExperienceFilesRouter.post(
           )
         );
       }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+ExperienceFilesRouter.get(
+  "/users/:userId/experiences/csv/download",
+  isUserExisted,
+  async (req, res, next) => {
+    try {
+      const user = await UsersModel.getUserWithExperiencesDetails(
+        req.params.userId
+      );
+      res.send(user.experiences);
     } catch (error) {
       next(error);
     }
