@@ -2,12 +2,12 @@
 
 ## Front End
 
-- Github Repo -> ...
-- Vercel URL -> ...
+- Github Repo > https://github.com/Pietrek1989/LinkedIn_Build
+- Vercel URL > ...
 
 ## See documentation:
 
--> https://documenter.getpostman.com/view/25420267/2s93RKyvdx
+- https://documenter.getpostman.com/view/25420267/2s93RKyvdx
 
 ## Run in postman:
 
@@ -15,6 +15,6 @@
 
 ## Contributors
 
-- Sabin Andrei -> https://github.com/Sabin789
-- Piotr Rodzen -> https://github.com/Pietrek1989
-- M. Yasir Ozdemir -> https://github.com/yasirozdemir
+- Sabin Andrei > https://github.com/Sabin789
+- Piotr Rodzen > https://github.com/Pietrek1989
+- M. Yasir Ozdemir > https://github.com/yasirozdemir
