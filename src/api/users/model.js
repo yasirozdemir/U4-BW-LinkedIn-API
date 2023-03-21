@@ -30,9 +30,21 @@ const UsersSchema = new Schema(
     experiences: [
       { type: mongoose.Types.ObjectId, required: true, ref: "Experience" },
     ],
-    likedPosts: [{ type: mongoose.Types.ObjectId, ref: "Post"}]
-  },
-  { timestamps: true }
+    likedPosts: [{ type: mongoose.Types.ObjectId, ref: "Post"}],
+    friends:{
+      type:[{type: mongoose.Types.ObjectId, ref: "User"}],
+      default:[]
+    },
+    friendRequests:{
+      type:[{type: mongoose.Types.ObjectId, ref: "User"}],
+      default:[]
+    },
+    sentRequests:{
+      type:[{type: mongoose.Types.ObjectId,required:true, ref: "User"}],
+      default:[]
+    }
+
+    }, { timestamps: true }
 );
 
 UsersSchema.static("getUserWithExperiencesDetails", async function (id) {
