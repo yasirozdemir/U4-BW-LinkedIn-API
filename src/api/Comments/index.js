@@ -36,7 +36,8 @@ commentRouter.post("/posts/:postId/comments",isPostExisted, async (req,res,next)
 
 commentRouter.get("/posts/:postId/comments",isPostExisted, async (req,res,next)=>{
     try{
-   const Comments=await commentSchema.find()
+   const Post=await postModel.findById(req.params.postId)
+   const Comments=Post.comments
    res.send(Comments)
     }catch(err){
         next(err)
