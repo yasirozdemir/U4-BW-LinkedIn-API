@@ -101,6 +101,7 @@ try{
   const newSender=await UsersModel.findById( req.params.userId)
  
 if(newSender){
+    if(!newSender.friends.includes(req.params.secondUserId)){
     if(!newSender.sentRequests.includes(req.params.secondUserId.toString())){
         const sender=await UsersModel.findByIdAndUpdate(
             req.params.userId,
@@ -115,6 +116,8 @@ if(newSender){
         res.send(`Friend Request sent`)
     }else{
         res.send("You already sent this user a friend request")
+    }}else{
+        res.send("You are already friends with this user")
     }
 }
 }catch(err){
@@ -126,7 +129,7 @@ UsersRouter.put("/users/:userId/friendUnfriend/:secondUserId", async (req,res,ne
     try{
         const newFriend= await UsersModel.findById(req.params.userId)
         if(newFriend){
-         if(newFriend.friendRequests.includes(req.params.secondUserId.toString())){
+         if(!newFriend.friendRequests.includes(req.params.secondUserId.toString())){
             if(!newFriend.friends.includes(req.params.secondUserId.toString())){
                 const reciever=await UsersModel.findByIdAndUpdate(
                     req.params.userId,
@@ -183,6 +186,8 @@ UsersRouter.put("/users/:userId/decline/:secondUserId", async (req,res,next)=>{
                     {new:true,runValidators:true}
                 )
                 res.send("Friend Request Declined")
+            }else{
+                res.send("There is no request to decline")
             }
         }
     }catch(err){
