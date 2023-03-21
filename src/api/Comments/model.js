@@ -14,7 +14,7 @@ const commentSchema = new Schema(
 commentSchema.static("getCommentsWithUserDetails", async function () {
   const comments = await this.find().populate({
     path: "user",
-    select: "name surname image",
+    select: "name surname image createdAt updatedAt",
   });
   return comments;
 });
