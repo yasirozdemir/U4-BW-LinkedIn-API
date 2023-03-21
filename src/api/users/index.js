@@ -2,7 +2,7 @@ import  Express  from "express";
 import createHttpError from "http-errors"
 import UsersModel from "./model.js";
 import q2m from "query-to-mongo"
-
+import mongoose, { model } from "mongoose";
 const UsersRouter=Express.Router()
 
 
@@ -32,6 +32,7 @@ UsersRouter.get("/users", async (req,res,next)=>{
       .skip(mongoQuery.options.skip)
       .sort(mongoQuery.options.sort)
       .populate({path:"posts",select:"text image "})
+      .populate({path:"friendRequests", select:"name email"})
       
       const total = await UsersModel.countDocuments(mongoQuery.criteria)
       res.send({
@@ -93,6 +94,99 @@ UsersRouter.delete("/users/:userId", async (req,res,next)=>{
        }
     }catch(err){
         next(err)
+    }
+})
+UsersRouter.put("/users/:userId/friendRequest/:secondUserId", async (req,res,next)=>{
+try{
+  const newSender=await UsersModel.findById( req.params.userId)
+ 
+if(newSender){
+    if(!newSender.sentRequests.includes(req.params.secondUserId.toString())){
+        const sender=await UsersModel.findByIdAndUpdate(
+            req.params.userId,
+            {$push:{sentRequests:req.params.secondUserId}},
+            {new:true,runValidators:true}
+            )
+        const reciever=await UsersModel.findByIdAndUpdate(
+            req.params.secondUserId,
+            {$push:{friendRequests:req.params.userId}},
+            {new:true,runValidators:true}
+        )
+        res.send(`Friend Request sent`)
+    }else{
+        res.send("You already sent this user a friend request")
+    }
+}
+}catch(err){
+    next(err)
+}
+})
+
+UsersRouter.put("/users/:userId/friendUnfriend/:secondUserId", async (req,res,next)=>{
+    try{
+        const newFriend= await UsersModel.findById(req.params.userId)
+        if(newFriend){
+         if(newFriend.friendRequests.includes(req.params.secondUserId.toString())){
+            if(!newFriend.friends.includes(req.params.secondUserId.toString())){
+                const reciever=await UsersModel.findByIdAndUpdate(
+                    req.params.userId,
+                    {$push:{friends:req.params.secondUserId},
+                    $pull:{friendRequests:req.params.secondUserId}},
+                    
+                    {new:true,runValidators:true}
+                    )
+                const sender=await UsersModel.findByIdAndUpdate(
+                    req.params.secondUserId,
+                    {$push:{friends:req.params.userId},
+                    $pull:{sentRequests:req.params.userId}},
+                    
+                    {new:true,runValidators:true}
+                )
+                res.send("Friend request accepted")
+            }else{
+                const reciever=await UsersModel.findByIdAndUpdate(
+                    req.params.userId,
+                    {$pull:{friends:req.params.secondUserId}},
+                    
+                    {new:true,runValidators:true}
+                    )
+                const sender=await UsersModel.findByIdAndUpdate(
+                    req.params.secondUserId,
+                    {$pull:{friends:req.params.userId}},
+                 
+                    {new:true,runValidators:true}
+                )
+                res.send("Unfriended")
+            }
+        }else{
+            res.send("You need to send a friend request first")
+        }
+        }
+    }catch(err){
+        next(err)
+    }
+})
+
+UsersRouter.put("/users/:userId/decline/:secondUserId", async (req,res,next)=>{
+    try{
+        const newFriend= await UsersModel.findById(req.params.userId)
+        if(newFriend){
+            if(newFriend.friendRequests.includes(req.params.secondUserId.toString())){
+                const reciever=await UsersModel.findByIdAndUpdate(
+                    req.params.userId,
+                    {$pull:{friendRequests:req.params.secondUserId}},
+                    {new:true,runValidators:true}
+                    )
+                const sender=await UsersModel.findByIdAndUpdate(
+                    req.params.secondUserId,
+                    {$pull:{sentRequests:req.params.userId}},
+                    {new:true,runValidators:true}
+                )
+                res.send("Friend Request Declined")
+            }
+        }
+    }catch(err){
+     next(err)
     }
 })
 
