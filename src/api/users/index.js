@@ -115,7 +115,17 @@ if(newSender){
         )
         res.send(`Friend Request sent`)
     }else{
-        res.send("You already sent this user a friend request")
+        const sender=await UsersModel.findByIdAndUpdate(
+            req.params.userId,
+            {$pull:{sentRequests:req.params.secondUserId}},
+            {new:true,runValidators:true}
+            )
+        const reciever=await UsersModel.findByIdAndUpdate(
+            req.params.secondUserId,
+            {$pull:{friendRequests:req.params.userId}},
+            {new:true,runValidators:true}
+        )
+        res.send(`Friend Request unsent`)
     }}else{
         res.send("You are already friends with this user")
     }
