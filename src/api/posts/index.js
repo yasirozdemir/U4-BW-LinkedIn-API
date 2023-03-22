@@ -59,7 +59,11 @@ PostsRouter.get("/posts", async (req, res, next) => {
 
 PostsRouter.get("/posts/:postId", async (req, res, next) => {
   try {
-    const Posts = await PostModel.findById(req.params.postId);
+    const Posts = await PostModel.findById(req.params.postId).populate({
+      path: "likes",
+      select: " name surname userId",
+    });
+
     if (Posts) {
       res.send(Posts);
     } else {
