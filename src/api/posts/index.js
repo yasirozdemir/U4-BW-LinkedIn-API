@@ -112,18 +112,17 @@ PostsRouter.delete("/posts/:postId", async (req, res, next) => {
 });
 
 // like dislike ✅ add liked post's id into user's liked posts property.
-PostsRouter.put("/posts/:postId/LikeDislike", async (req, res, next) => {
+PostsRouter.post("/posts/:postId/like", async (req, res, next) => {
   try {
     const post = await PostModel.findById(req.params.postId);
-    const user = await UsersModel.findById(req.body.userId);
-    if (post && user) {
+    if (post) {
       if (!post.likes.includes(req.body.userId.toString())) {
         const likedPost = await PostModel.findByIdAndUpdate(
           req.params.postId,
           { $push: { likes: req.body.userId } },
           { new: true, runValidators: true }
         );
-        const whoLiked = await UsersModel.findByIdAndUpdate(
+        await UsersModel.findByIdAndUpdate(
           req.body.userId,
           { $push: { likedPosts: req.params.postId } },
           { new: true, runValidators: true }
@@ -156,7 +155,7 @@ PostsRouter.delete("/posts/:postId/dislike", async (req, res, next) => {
           { $pull: { likes: req.body.userId } },
           { new: true, runValidators: true }
         );
-        const whoDisliked = await UsersModel.findByIdAndUpdate(
+        await UsersModel.findByIdAndUpdate(
           req.body.userId,
           { $pull: { likedPosts: req.params.postId } },
           { new: true, runValidators: true }
@@ -171,10 +170,6 @@ PostsRouter.delete("/posts/:postId/dislike", async (req, res, next) => {
       if (post)
         next(
           createHttpError(404, `Post with id ${req.params.postId} not found!`)
-        );
-      if (user)
-        next(
-          createHttpError(404, `Post with id ${req.body.userId} not found!`)
         );
     }
   } catch (error) {
