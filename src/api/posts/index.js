@@ -145,7 +145,7 @@ PostsRouter.post("/posts/:postId/like", async (req, res, next) => {
   }
 });
 
-PostsRouter.delete("/posts/:postId/like", async (req, res, next) => {
+PostsRouter.delete("/posts/:postId/dislike", async (req, res, next) => {
   try {
     const post = await PostModel.findById(req.params.postId);
     if (post) {
