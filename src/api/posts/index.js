@@ -113,7 +113,7 @@ PostsRouter.post("/posts/:postId/like", async (req, res, next) => {
   try {
     const post = await PostModel.findById(req.params.postId);
     if (post) {
-      if (!post.likes.includes(req.body.userId.toString())) {
+      if (!post.likes.includes(req.body.userId)) {
         const likedPost = await PostModel.findByIdAndUpdate(
           req.params.postId,
           { $push: { likes: req.body.userId } },
@@ -162,12 +162,13 @@ PostsRouter.delete("/posts/:postId/dislike", async (req, res, next) => {
           likes: dislikedPost.likes,
           message: "Post disliked!",
         });
+      } else {
+        next(createHttpError(400, "You have already disliked the post!"));
       }
     } else {
-      if (post)
-        next(
-          createHttpError(404, `Post with id ${req.params.postId} not found!`)
-        );
+      next(
+        createHttpError(404, `Post with id ${req.params.postId} not found!`)
+      );
     }
   } catch (error) {
     next(error);
