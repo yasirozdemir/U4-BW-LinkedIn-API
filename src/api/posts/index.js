@@ -112,17 +112,18 @@ PostsRouter.delete("/posts/:postId", async (req, res, next) => {
 });
 
 // like dislike ✅ add liked post's id into user's liked posts property.
-PostsRouter.post("/posts/:postId/like", async (req, res, next) => {
+PostsRouter.put("/posts/:postId/LikeDislike", async (req, res, next) => {
   try {
     const post = await PostModel.findById(req.params.postId);
-    if (post) {
-      if (!post.likes.includes(req.body.userId)) {
+    const user = await UsersModel.findById(req.body.userId);
+    if (post && user) {
+      if (!post.likes.includes(req.body.userId.toString())) {
         const likedPost = await PostModel.findByIdAndUpdate(
           req.params.postId,
           { $push: { likes: req.body.userId } },
           { new: true, runValidators: true }
         );
-        await UsersModel.findByIdAndUpdate(
+        const whoLiked = await UsersModel.findByIdAndUpdate(
           req.body.userId,
           { $push: { likedPosts: req.params.postId } },
           { new: true, runValidators: true }
@@ -133,29 +134,12 @@ PostsRouter.post("/posts/:postId/like", async (req, res, next) => {
           message: "Post liked!",
         });
       } else {
-        next(createHttpError(400, "You have already liked the post!"));
-      }
-    } else {
-      next(
-        createHttpError(404, `Post with od ${req.params.postId} not found!`)
-      );
-    }
-  } catch (error) {
-    next(error);
-  }
-});
-
-PostsRouter.delete("/posts/:postId/like", async (req, res, next) => {
-  try {
-    const post = await PostModel.findById(req.params.postId);
-    if (post) {
-      if (post.likes.includes(req.body.userId)) {
         const dislikedPost = await PostModel.findByIdAndUpdate(
           req.params.postId,
           { $pull: { likes: req.body.userId } },
           { new: true, runValidators: true }
         );
-        await UsersModel.findByIdAndUpdate(
+        const whoDisliked = await UsersModel.findByIdAndUpdate(
           req.body.userId,
           { $pull: { likedPosts: req.params.postId } },
           { new: true, runValidators: true }
@@ -165,13 +149,16 @@ PostsRouter.delete("/posts/:postId/like", async (req, res, next) => {
           likes: dislikedPost.likes,
           message: "Post disliked!",
         });
-      } else {
-        next(createHttpError(400, "You have already disliked the post!"));
       }
     } else {
-      next(
-        createHttpError(404, `Post with od ${req.params.postId} not found!`)
-      );
+      if (post)
+        next(
+          createHttpError(404, `Post with id ${req.params.postId} not found!`)
+        );
+      if (user)
+        next(
+          createHttpError(404, `Post with id ${req.body.userId} not found!`)
+        );
     }
   } catch (error) {
     next(error);
