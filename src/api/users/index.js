@@ -96,7 +96,7 @@ UsersRouter.delete("/users/:userId", async (req,res,next)=>{
         next(err)
     }
 })
-UsersRouter.put("/users/:userId/friendRequest/:secondUserId", async (req,res,next)=>{
+UsersRouter.put("/users/:userId/sendFriendRequest/:secondUserId", async (req,res,next)=>{
 try{
   const newSender=await UsersModel.findById( req.params.userId)
  
@@ -115,17 +115,7 @@ if(newSender){
         )
         res.send(`Friend Request sent`)
     }else{
-        const sender=await UsersModel.findByIdAndUpdate(
-            req.params.userId,
-            {$pull:{sentRequests:req.params.secondUserId}},
-            {new:true,runValidators:true}
-            )
-        const reciever=await UsersModel.findByIdAndUpdate(
-            req.params.secondUserId,
-            {$pull:{friendRequests:req.params.userId}},
-            {new:true,runValidators:true}
-        )
-        res.send(`Friend Request unsent`)
+       res.send("You already sent this user a friend request")
     }}else{
         res.send("You are already friends with this user")
     }
@@ -133,6 +123,31 @@ if(newSender){
 }catch(err){
     next(err)
 }
+})
+
+UsersRouter.put("/users/:userId/unsend/:secondUserId" ,async (req,res,next)=>{
+    try{
+        const newSender=await UsersModel.findById( req.params.userId)
+        if(newSender){
+            if(newSender.sentRequests.includes(req.params.secondUserId.toString())){
+                const sender=await UsersModel.findByIdAndUpdate(
+                    req.params.userId,
+                    {$pull:{sentRequests:req.params.secondUserId}},
+                    {new:true,runValidators:true}
+                    )
+                const reciever=await UsersModel.findByIdAndUpdate(
+                    req.params.secondUserId,
+                    {$pull:{friendRequests:req.params.userId}},
+                    {new:true,runValidators:true}
+                )
+                res.send(`Friend Request sent`)
+            }else{
+                res.send("There is no friend request to unsend")
+            }
+        }
+    }catch(err){
+        next(err)
+    }
 })
 
 UsersRouter.put("/users/:userId/friendUnfriend/:secondUserId", async (req,res,next)=>{
