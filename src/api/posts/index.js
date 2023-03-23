@@ -37,14 +37,24 @@ PostsRouter.get("/posts", async (req, res, next) => {
       .populate({ path: "comments", select: "comment user" })
       .populate({ path: "user", select: " name surname  image  _id title" })
       .populate({
-        path: "comments.user likes",
+        path: "comments user likes",
         select: "name surname image",
+      })
+      .populate({
+        path: "comments",
+        populate: {
+          path: "user",
+          select: "name surname image",
+        },
       });
 
     const total = await PostModel.countDocuments(mongoQuery.criteria);
 
     res.send({
-      links: mongoQuery.links("http://localhost:3001/api/posts/", total),
+      links: mongoQuery.links(
+        process.env.FE_PROD_URL || process.env.FE_DEV_URL + "/api/posts/",
+        total
+      ),
       total,
       numberOfPages: Math.ceil(total / mongoQuery.options.limit),
       allPosts,
