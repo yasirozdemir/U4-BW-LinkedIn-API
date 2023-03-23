@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/yasirozdemir/U4-BW-LinkedIn-API#readme",
   "dependencies": {
+    "@json2csv/node": "^6.1.2",
     "cloudinary": "^1.35.0",
     "cors": "^2.8.5",
     "csv-writer": "^1.6.0",

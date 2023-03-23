@@ -7,6 +7,8 @@ import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import createHttpError from "http-errors";
 import { createObjectCsvWriter } from "csv-writer";
+import { pipeline } from "stream";
+import { Transform } from "@json2csv/node";
 
 const ExperienceFilesRouter = Express.Router();
 
@@ -70,33 +72,66 @@ ExperienceFilesRouter.get(
           "-" +
           user.surname
         ).toLowerCase()}-experiences.csv`;
-        const csvOptions = {
-          path: filename,
-          header: [
-            { id: "area", title: "Area" },
-            { id: "role", title: "Role" },
-            { id: "company", title: "Company" },
-            { id: "description", title: "Description" },
-          ],
-        };
-        const csvWriter = createObjectCsvWriter(csvOptions);
+        const src = JSON.stringify(experiences);
+        const transform = new Transform({
+          fields: ["area", "role", "company", "description"],
+        });
         res.setHeader(
           "Content-Disposition",
           `attachment; filename=${filename}`
         );
-        await csvWriter.writeRecords(experiences);
-        res.sendFile(filename, { root: process.cwd() }, (err) => {
-          console.log(err);
+        pipeline(src, transform, res, (error) => {
+          if (error) console.log(error);
         });
-      } else {
-        next(
-          createHttpError(404, `User with id ${req.params.userId} not found!`)
-        );
       }
     } catch (error) {
       next(error);
     }
   }
 );
+
+// ExperienceFilesRouter.get(
+//   "/users/:userId/experiences/csv/download",
+//   isUserExisted,
+//   async (req, res, next) => {
+//     try {
+//       const user = await UsersModel.getUserWithExperiencesDetails(
+//         req.params.userId
+//       );
+//       if (user) {
+//         const experiences = user.experiences;
+//         const filename = `${(
+//           user.name +
+//           "-" +
+//           user.surname
+//         ).toLowerCase()}-experiences.csv`;
+//         const csvOptions = {
+//           path: filename,
+//           header: [
+//             { id: "area", title: "Area" },
+//             { id: "role", title: "Role" },
+//             { id: "company", title: "Company" },
+//             { id: "description", title: "Description" },
+//           ],
+//         };
+//         const csvWriter = createObjectCsvWriter(csvOptions);
+//         res.setHeader(
+//           "Content-Disposition",
+//           `attachment; filename=${filename}`
+//         );
+//         await csvWriter.writeRecords(experiences);
+//         res.sendFile(filename, { root: process.cwd() }, (err) => {
+//           console.log(err);
+//         });
+//       } else {
+//         next(
+//           createHttpError(404, `User with id ${req.params.userId} not found!`)
+//         );
+//       }
+//     } catch (error) {
+//       next(error);
+//     }
+//   }
+// );
 
 export default ExperienceFilesRouter;
