@@ -51,7 +51,10 @@ PostsRouter.get("/posts", async (req, res, next) => {
     const total = await PostModel.countDocuments(mongoQuery.criteria);
 
     res.send({
-      links: mongoQuery.links("http://localhost:3001/api/posts/", total),
+      links: mongoQuery.links(
+        process.env.FE_PROD_URL || process.env.FE_DEV_URL + "/api/posts/",
+        total
+      ),
       total,
       numberOfPages: Math.ceil(total / mongoQuery.options.limit),
       allPosts,
