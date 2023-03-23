@@ -54,11 +54,9 @@ server.use(genericErrorHandler);
 
 mongoose.connect(process.env.MONGO_URL);
 mongoose.connection.on("connected", () => {
-  console.log("succesfully connected to mongo");
-});
-
-server.listen(port, () => {
-  console.table(listEndpoints(server));
-  console.log(process.env.FE_DEV_URL);
-  console.log(`Server is listening on port ${port}`);
+  console.log("succesfully connected to mongo ✅");
+  server.listen(port, () => {
+    // console.table(listEndpoints(server));
+    console.log(`Server is running on port ${port}`);
+  });
 });
