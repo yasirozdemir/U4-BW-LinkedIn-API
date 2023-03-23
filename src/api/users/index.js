@@ -102,7 +102,7 @@ try{
   const newReciever= await UsersModel.findById(req.params.secondUserId)
 if(newSender,newReciever){
     if(!newSender.friends.includes(req.params.secondUserId)){
-    if(!newReciever.friendRequests.includes(req.params.userId.toString())){
+    if(!newReciever.friendRequests.includes(req.params.userId.toString()) && !newSender.friendRequests.includes(req.params.userId.toString())){
         const reciever=await UsersModel.findByIdAndUpdate(
             req.params.secondUserId,
             {$push:{friendRequests:req.params.userId}},
@@ -206,6 +206,23 @@ UsersRouter.get("/users/:userId/friendReqs", async(req,res,next)=>{
         
         //  const allReqs= 
          User.populate({path:"friendRequests", select:"name email image"}).then(user => {
+            res.json(user)})
+        // const freindReqs=User.friendRequests
+
+        // res.send(allReqs)
+    }catch(err){
+        next(err)
+    }
+})
+
+
+
+UsersRouter.get("/users/:userId/friends", async(req,res,next)=>{
+    try{
+        const User= await UsersModel.findById(req.params.userId)
+        
+        //  const allReqs= 
+         User.populate({path:"friends", select:"name email image"}).then(user => {
             res.json(user)})
         // const freindReqs=User.friendRequests
 
