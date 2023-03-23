@@ -38,10 +38,6 @@ const UsersSchema = new Schema(
     friendRequests:{
       type:[{type: mongoose.Types.ObjectId, ref: "User"}],
       default:[]
-    },
-    sentRequests:{
-      type:[{type: mongoose.Types.ObjectId,required:true, ref: "User"}],
-      default:[]
     }
 
     }, { timestamps: true }

@@ -96,26 +96,28 @@ UsersRouter.delete("/users/:userId", async (req,res,next)=>{
         next(err)
     }
 })
-UsersRouter.put("/users/:userId/sendFriendRequest/:secondUserId", async (req,res,next)=>{
+UsersRouter.put("/users/:userId/friendRequest/:secondUserId", async (req,res,next)=>{
 try{
   const newSender=await UsersModel.findById( req.params.userId)
- 
-if(newSender){
+  const newReciever= await UsersModel.findById(req.params.secondUserId)
+if(newSender,newReciever){
     if(!newSender.friends.includes(req.params.secondUserId)){
-    if(!newSender.sentRequests.includes(req.params.secondUserId.toString())){
-        const sender=await UsersModel.findByIdAndUpdate(
-            req.params.userId,
-            {$push:{sentRequests:req.params.secondUserId}},
-            {new:true,runValidators:true}
-            )
+    if(!newReciever.friendRequests.includes(req.params.userId.toString())){
         const reciever=await UsersModel.findByIdAndUpdate(
             req.params.secondUserId,
             {$push:{friendRequests:req.params.userId}},
             {new:true,runValidators:true}
         )
-        res.send(`Friend Request sent`)
+        res.send({reciever,
+        message:"Friend Request Sent"
+    })
     }else{
-       res.send("You already sent this user a friend request")
+        const reciever=await UsersModel.findByIdAndUpdate(
+            req.params.secondUserId,
+            {$pull:{friendRequests:req.params.userId}},
+            {new:true,runValidators:true}
+        )
+        res.send(`Friend Request unsent`)
     }}else{
         res.send("You are already friends with this user")
     }
@@ -125,75 +127,53 @@ if(newSender){
 }
 })
 
-UsersRouter.put("/users/:userId/unsend/:secondUserId" ,async (req,res,next)=>{
+UsersRouter.put("/users/:userId/friendUnfriend/:secondUserId", async (req,res,next)=>{
     try{
-        const newSender=await UsersModel.findById( req.params.userId)
-        if(newSender){
-            if(newSender.sentRequests.includes(req.params.secondUserId.toString())){
-                const sender=await UsersModel.findByIdAndUpdate(
+        const newFriend= await UsersModel.findById(req.params.userId)
+        if(newFriend){
+            if(!newFriend.friends.includes(req.params.secondUserId.toString())){
+                const reciever = await UsersModel.findByIdAndUpdate(
                     req.params.userId,
-                    {$pull:{sentRequests:req.params.secondUserId}},
-                    {new:true,runValidators:true}
-                    )
-                const reciever=await UsersModel.findByIdAndUpdate(
+                    {
+                        $push: { friends: req.params.secondUserId },
+                        $pull: { friendRequests: req.params.secondUserId }
+                    },
+                    { new: true, runValidators: true }
+                )
+               
+                const sender=await UsersModel.findByIdAndUpdate(
                     req.params.secondUserId,
-                    {$pull:{friendRequests:req.params.userId}},
+                    {$push:{friends:req.params.userId}},
+                    
                     {new:true,runValidators:true}
                 )
-                res.send(`Friend Request sent`)
-            }else{
-                res.send("There is no friend request to unsend")
+                res.send("Friend request accepted")
+         if(!newFriend.friendRequests.includes(req.params.secondUserId.toString())){
+            res.send("You need to send a friend request first")
+                
             }
+        }else{
+            const reciever=await UsersModel.findByIdAndUpdate(
+                req.params.userId,
+                {$pull:{friends:req.params.secondUserId}},
+                
+                {new:true,runValidators:true}
+                )
+            const sender=await UsersModel.findByIdAndUpdate(
+                req.params.secondUserId,
+                {$pull:{friends:req.params.userId}},
+             
+                {new:true,runValidators:true}
+            )
+            res.send("Unfriended")
+        }
         }
     }catch(err){
         next(err)
     }
 })
 
-UsersRouter.put("/users/:userId/friendUnfriend/:secondUserId", async (req,res,next)=>{
-    try{
-        const newFriend= await UsersModel.findById(req.params.userId)
-        if(newFriend){
-         if(!newFriend.friendRequests.includes(req.params.secondUserId.toString())){
-            if(!newFriend.friends.includes(req.params.secondUserId.toString())){
-                const reciever=await UsersModel.findByIdAndUpdate(
-                    req.params.userId,
-                    {$push:{friends:req.params.secondUserId},
-                    $pull:{friendRequests:req.params.secondUserId}},
-                    
-                    {new:true,runValidators:true}
-                    )
-                const sender=await UsersModel.findByIdAndUpdate(
-                    req.params.secondUserId,
-                    {$push:{friends:req.params.userId},
-                    $pull:{sentRequests:req.params.userId}},
-                    
-                    {new:true,runValidators:true}
-                )
-                res.send("Friend request accepted")
-            }else{
-                const reciever=await UsersModel.findByIdAndUpdate(
-                    req.params.userId,
-                    {$pull:{friends:req.params.secondUserId}},
-                    
-                    {new:true,runValidators:true}
-                    )
-                const sender=await UsersModel.findByIdAndUpdate(
-                    req.params.secondUserId,
-                    {$pull:{friends:req.params.userId}},
-                 
-                    {new:true,runValidators:true}
-                )
-                res.send("Unfriended")
-            }
-        }else{
-            res.send("You need to send a friend request first")
-        }
-        }
-    }catch(err){
-        next(err)
-    }
-})
+UsersRouter.put
 
 UsersRouter.put("/users/:userId/decline/:secondUserId", async (req,res,next)=>{
     try{
@@ -220,5 +200,18 @@ UsersRouter.put("/users/:userId/decline/:secondUserId", async (req,res,next)=>{
     }
 })
 
+UsersRouter.get("/users/:userId/friendReqs", async(req,res,next)=>{
+    try{
+        const User= await UsersModel.findById(req.params.userId)
+        
+        //  const allReqs= 
+         User.populate({path:"friendRequests", select:"name email image"}).then(user => {
+            res.json(user)})
+        // const freindReqs=User.friendRequests
 
+        // res.send(allReqs)
+    }catch(err){
+        next(err)
+    }
+})
 export default UsersRouter
