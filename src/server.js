@@ -7,7 +7,7 @@ import {
   badRequestHandler,
   genericErrorHandler,
   notFoundHandler,
-} from "./ErrorHandlers.js";
+} from "./errorHandlers.js";
 import UsersRouter from "./api/users/index.js";
 import PostsRouter from "./api/posts/index.js";
 import UsersFileRouter from "./api/File/UsersFileRouter.js";
