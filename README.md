@@ -3,7 +3,7 @@
 ## Front End
 
 - Github Repo > https://github.com/Pietrek1989/LinkedIn_Build
-- Vercel URL > https://linked-in-build-fe-git-main-pietrek1989.vercel.app
+- Vercel URL > https://linked-in-build-fe.vercel.app
 
 ## See documentation:
 
