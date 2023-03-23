@@ -16,6 +16,7 @@ import ExperiencesRouter from "./api/experiences/index.js";
 import ExperienceFileRouter from "./api/File/ExperienceFileRouter.js";
 import commentRouter from "./api/Comments/index.js";
 import pdfFileRouter from "./api/File/pdfFileRouter.js";
+import createHttpError from "http-errors";
 
 const server = Express();
 const port = process.env.PORT;
@@ -43,7 +44,7 @@ server.use("/api", PostsRouter);
 server.use("/api", UsersFileRouter);
 server.use("/api", ExperienceFileRouter);
 server.use("/api", PostsFileRouter);
-server.use("/api",commentRouter)
+server.use("/api", commentRouter);
 server.use("/api", pdfFileRouter);
 
 server.use(badRequestHandler);
